@@ -33,11 +33,22 @@ export type AuthSuccessResult<Data = undefined> = Data extends undefined
       data: Data;
     };
 
-export interface AuthErrorResult {
-  status: "error";
-  message: string;
-  data?: never;
-}
+export type AuthErrorResult =
+  | {
+      status: "error";
+      message: string;
+      data?: never;
+    }
+  | {
+      status: "input-validation-errors";
+      fields: {
+        [x: string]: string[] | undefined;
+        [x: number]: string[] | undefined;
+        [x: symbol]: string[] | undefined;
+      };
+      message?: never;
+      data?: never;
+    };
 
 export type AuthResult<Data = undefined> =
   | AuthErrorResult

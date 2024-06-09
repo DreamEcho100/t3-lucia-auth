@@ -10,7 +10,17 @@ import { verify } from "../../libs/hash";
  */
 export async function signInService(input, options) {
   const existingUser = await db.query.users.findFirst({
-    where: (table) => eq(table.name, input.name),
+    where: (table) => {
+      if (input.email) {
+        return eq(table.email, input.email);
+      }
+
+      if (!input.name) {
+        throw new Error("Username or email is required");
+      }
+
+      return eq(table.name, input.name);
+    },
   });
 
   if (!existingUser) {

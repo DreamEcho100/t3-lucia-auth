@@ -19,8 +19,8 @@ export async function signUpService(input, options) {
     .values({
       id: userId,
       name: input.name,
-      hashedPassword,
       email: input.email,
+      hashedPassword,
     })
     .returning({ id: users.id, name: users.name });
 

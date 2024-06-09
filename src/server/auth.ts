@@ -134,9 +134,8 @@ function PostgresDrizzleAdapter(
       return client
         .insert(sessionsTable)
         .values({
-          id: await createAsyncId(),
+          id: data.sessionToken,
           expiresAt: data.expires,
-          sessionToken: data.sessionToken,
           userId: data.userId,
         })
         .returning()
@@ -144,8 +143,8 @@ function PostgresDrizzleAdapter(
           const data = res[0]!;
 
           return {
-            id: data.id,
-            sessionToken: data.sessionToken,
+            // id: data.id,
+            sessionToken: data.id,
             userId: data.userId,
             expires: data.expiresAt,
           };
@@ -158,7 +157,7 @@ function PostgresDrizzleAdapter(
           user: usersTable,
         })
         .from(sessionsTable)
-        .where(eq(sessionsTable.sessionToken, sessionToken))
+        .where(eq(sessionsTable.id, sessionToken))
         .innerJoin(usersTable, eq(usersTable.id, sessionsTable.userId))
         .then((res) => {
           // (res.length > 0 ? res[0]! : null)
@@ -171,8 +170,7 @@ function PostgresDrizzleAdapter(
           return {
             user: data.user,
             session: {
-              id: data.session.id,
-              sessionToken: data.session.sessionToken,
+              sessionToken: data.session.id,
               userId: data.session.userId,
               expires: data.session.expiresAt,
             },
@@ -202,7 +200,7 @@ function PostgresDrizzleAdapter(
       return client
         .update(sessionsTable)
         .set(data)
-        .where(eq(sessionsTable.sessionToken, data.sessionToken))
+        .where(eq(sessionsTable.id, data.sessionToken))
         .returning()
         .then((res) => {
           if (res.length === 0) {
@@ -212,8 +210,7 @@ function PostgresDrizzleAdapter(
           const data = res[0]!;
 
           return {
-            id: data.id,
-            sessionToken: data.sessionToken,
+            sessionToken: data.id,
             userId: data.userId,
             expires: data.expiresAt,
           };
@@ -245,7 +242,7 @@ function PostgresDrizzleAdapter(
     async deleteSession(sessionToken: string) {
       await client
         .delete(sessionsTable)
-        .where(eq(sessionsTable.sessionToken, sessionToken));
+        .where(eq(sessionsTable.id, sessionToken));
     },
     async createVerificationToken(data: VerificationToken) {
       return client

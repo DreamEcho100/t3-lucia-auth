@@ -39,7 +39,7 @@ export const sessions = createTable(
   "session",
   {
     id: varchar("id").primaryKey(),
-    sessionToken: varchar("session_token", { length: 255 }).notNull().unique(),
+    // sessionToken: varchar("session_token", { length: 255 }).notNull().unique(),
     userId: varchar("user_id", { length: 255 })
       .notNull()
       .references(() => users.id),

@@ -1,6 +1,5 @@
 import { lucia } from "../../libs/lucia";
 import { validateRequest } from "../validate-request";
-import { errorFormatter } from "../../libs/error";
 
 /**
  * @param {import("./types").SignOutOptions} options

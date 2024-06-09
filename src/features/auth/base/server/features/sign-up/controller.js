@@ -7,9 +7,5 @@ import { signUpService } from "./service";
  * @param {import("./types").SignUpOptions} options
  */
 export function signUpController(input, options) {
-  try {
-    return signUpService(signUpInput(input), options);
-  } catch (error) {
-    return errorFormatter(error);
-  }
+  return signUpService(signUpInput(input), options).catch(errorFormatter);
 }
