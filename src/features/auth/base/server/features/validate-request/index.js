@@ -1,7 +1,7 @@
 import { lucia } from "../../libs/lucia";
 
 /** @param {import("../../types").GetServerCookies} getServerCookies */
-export async function validateRequest(getServerCookies) {
+export async function validateRequestService(getServerCookies) {
   const sessionId =
     getServerCookies().get(lucia.sessionCookieName)?.value ?? null;
 

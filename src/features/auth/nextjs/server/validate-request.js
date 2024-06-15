@@ -1,5 +1,5 @@
 import { unstable_cache as cache } from "next/cache";
-import { validateRequest as baseValidateRequest } from "../../base/server/features/validate-request";
+import { validateRequestService as baseValidateRequest } from "../../base/server/features/validate-request/index.js";
 import { cookies } from "next/headers";
 
 export const validateRequest = cache(async () => {

@@ -1,16 +1,17 @@
-import { type SignUpSchema } from "~/features/auth/base/server/libs/validators";
-import {
-  type AuthSuccessResult,
-  type AuthResult,
-  type GetServerCookies,
+import type {
+  AuthSuccessResult,
+  AuthResult,
+  AuthDefaultOptions,
 } from "../../types";
-import { type z } from "zod";
 
-export type SignUpInput = z.infer<typeof SignUpSchema>;
+export type SignUpInput = {
+  name: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+};
 
-export interface SignUpOptions {
-  getServerCookies: GetServerCookies;
-}
+export type SignUpOptions = AuthDefaultOptions;
 
 export interface SignUpSuccessResultData {
   userId: string;

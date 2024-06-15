@@ -110,21 +110,54 @@ function PostgresDrizzleAdapter(
         .insert(usersTable)
         .values({ ...insertData, id: await createAsyncId() })
         .returning()
-        .then((res) => res[0]!);
+        .then((res) => {
+          const data = res[0]!;
+
+          return {
+            id: data.id,
+            name: data.name,
+            email: data.email,
+            image: data.image,
+            emailVerified: data.emailVerifiedAt,
+            createdAt: data.createdAt,
+          };
+        });
     },
     async getUser(userId: string) {
       return client
         .select()
         .from(usersTable)
         .where(eq(usersTable.id, userId))
-        .then((res) => (res.length > 0 ? res[0]! : null));
+        .then((res) => {
+          const data = res[0]!;
+
+          return {
+            id: data.id,
+            name: data.name,
+            email: data.email,
+            image: data.image,
+            emailVerified: data.emailVerifiedAt,
+            createdAt: data.createdAt,
+          };
+        });
     },
     async getUserByEmail(email: string) {
       return client
         .select()
         .from(usersTable)
         .where(eq(usersTable.email, email))
-        .then((res) => (res.length > 0 ? res[0]! : null));
+        .then((res) => {
+          const data = res[0]!;
+
+          return {
+            id: data.id,
+            name: data.name,
+            email: data.email,
+            image: data.image,
+            emailVerified: data.emailVerifiedAt,
+            createdAt: data.createdAt,
+          };
+        });
     },
     async createSession(data: {
       sessionToken: string;
@@ -168,7 +201,14 @@ function PostgresDrizzleAdapter(
           const data = res[0]!;
 
           return {
-            user: data.user,
+            user: {
+              id: data.user.id,
+              name: data.user.name,
+              email: data.user.email,
+              image: data.user.image,
+              emailVerified: data.user.emailVerifiedAt,
+              createdAt: data.user.createdAt,
+            },
             session: {
               sessionToken: data.session.id,
               userId: data.session.userId,
@@ -192,7 +232,14 @@ function PostgresDrizzleAdapter(
         throw new Error("No user found.");
       }
 
-      return result;
+      return {
+        id: result.id,
+        name: result.name,
+        email: result.email,
+        image: result.image,
+        emailVerified: result.emailVerifiedAt,
+        createdAt: result.createdAt,
+      };
     },
     async updateSession(
       data: Partial<AdapterSession> & Pick<AdapterSession, "sessionToken">,
@@ -237,7 +284,16 @@ function PostgresDrizzleAdapter(
         )
         .then((res) => res[0]!);
 
-      return result?.user ?? null;
+      return result
+        ? {
+            id: result.user.id,
+            name: result.user.name,
+            email: result.user.email,
+            image: result.user.image,
+            emailVerified: result.user.emailVerifiedAt,
+            createdAt: result.user.createdAt,
+          }
+        : null;
     },
     async deleteSession(sessionToken: string) {
       await client

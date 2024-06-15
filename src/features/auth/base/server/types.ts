@@ -1,4 +1,3 @@
-// import { cookies } from "next/headers";
 import {
   type ResponseCookie,
   type ResponseCookies,
@@ -22,6 +21,15 @@ export type GetServerCookies = () => {
   ) => ResponseCookies;
 };
 
+export interface AuthNeededEnv {
+  JWT_SECRET: string;
+}
+
+export type AuthDefaultOptions<Other = unknown> = {
+  getCookies: GetServerCookies;
+  env: AuthNeededEnv;
+} & Other;
+
 export type AuthSuccessResult<Data = undefined> = Data extends undefined
   ? {
       status: "success";
@@ -33,11 +41,19 @@ export type AuthSuccessResult<Data = undefined> = Data extends undefined
       data: Data;
     };
 
+export type AuthRedirectResult = {
+  status: "redirect";
+  message?: string;
+  url: string;
+  statusNumber: number;
+};
+
 export type AuthErrorResult =
   | {
       status: "error";
       message: string;
       data?: never;
+      statusNumber: number;
     }
   | {
       status: "input-validation-errors";
@@ -48,6 +64,7 @@ export type AuthErrorResult =
       };
       message?: never;
       data?: never;
+      statusNumber: number;
     };
 
 export type AuthResult<Data = undefined> =

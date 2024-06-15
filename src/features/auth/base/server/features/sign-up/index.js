@@ -1,9 +1,18 @@
+import { errorFormatter } from "../../libs/error";
 import { db } from "~/server/db";
-// import { hash, verify } from "@node-rs/argon2";
 import { lucia } from "../../libs/lucia";
 import { createAsyncId } from "~/utils/createId";
 import { users } from "~/server/db/schema";
 import { hash } from "../../libs/hash";
+import { SignUpSchema } from "~/features/auth/base/server/libs/validators";
+
+/**
+ * @param {unknown} input
+ * @returns {import("./types").SignUpInput}
+ */
+export function signUpInput(input) {
+  return SignUpSchema.parse(input);
+}
 
 /**
  * @param {import("./types").SignUpInput} input
@@ -31,8 +40,16 @@ export async function signUpService(input, options) {
   const sessionCookie = lucia.createSessionCookie(session.id);
 
   options
-    .getServerCookies()
+    .getCookies()
     .set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
 
   return { status: "success", data: { userId } };
+}
+
+/**
+ * @param {unknown} input
+ * @param {import("./types").SignUpOptions} options
+ */
+export function signUpController(input, options) {
+  return signUpService(signUpInput(input), options).catch(errorFormatter);
 }

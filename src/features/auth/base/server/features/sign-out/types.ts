@@ -1,12 +1,10 @@
-import {
-  type AuthSuccessResult,
-  type AuthResult,
-  type GetServerCookies,
+import type {
+  AuthSuccessResult,
+  AuthResult,
+  AuthDefaultOptions,
 } from "../../types";
 
-export interface SignOutOptions {
-  getServerCookies: GetServerCookies;
-}
+export type SignOutOptions = AuthDefaultOptions;
 
 export type SignOutServiceSuccessResult = Promise<AuthSuccessResult>;
 export type SignOutServiceResult = Promise<AuthResult>;

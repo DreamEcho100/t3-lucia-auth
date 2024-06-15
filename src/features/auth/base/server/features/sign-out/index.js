@@ -1,12 +1,12 @@
 import { lucia } from "../../libs/lucia";
-import { validateRequest } from "../validate-request";
+import { validateRequestService } from "../validate-request";
 
 /**
  * @param {import("./types").SignOutOptions} options
  * @returns {Promise<import("./types").SignOutServiceSuccessResult>}
  */
 export async function signOutService(options) {
-  const { session } = await validateRequest(options.getServerCookies);
+  const { session } = await validateRequestService(options.getCookies);
 
   if (!session) {
     throw new Error("Unauthorized");
@@ -16,7 +16,7 @@ export async function signOutService(options) {
   const sessionCookie = lucia.createBlankSessionCookie();
 
   options
-    .getServerCookies()
+    .getCookies()
     .set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
 
   return { status: "success", message: "Logged out successfully" };

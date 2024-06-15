@@ -23,12 +23,15 @@ export const users = createTable("user", {
   id: varchar("id", { length: 255 }).notNull().primaryKey(),
   name: varchar("name", { length: 255 }),
   email: varchar("email", { length: 255 }).notNull(),
-  emailVerified: timestamp("email_verified", {
+  emailVerifiedAt: timestamp("email_verified_at", {
     mode: "date",
     withTimezone: true,
   }).default(sql`CURRENT_TIMESTAMP`),
   image: varchar("image", { length: 255 }),
   hashedPassword: text("hashed_password"),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
 });
 
 export const usersRelations = relations(users, ({ many }) => ({
@@ -47,6 +50,9 @@ export const sessions = createTable(
       mode: "date",
       withTimezone: true,
     }).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
   },
   (session) => ({
     userIdIdx: index("session_user_id_idx").on(session.userId),
@@ -57,6 +63,22 @@ export const sessionsRelations = relations(sessions, ({ one }) => ({
   user: one(users, { fields: [sessions.userId], references: [users.id] }),
 }));
 
+export const emailsVerifications = createTable("email_verification", {
+  id: varchar("id").primaryKey(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id),
+  code: text("code").notNull(),
+  sentAt: timestamp("sent_at", {
+    withTimezone: true,
+    mode: "date",
+  }).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+});
+
+/** FOR NEXT AUTH ONLY **/
 export const accounts = createTable(
   "account",
   {

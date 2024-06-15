@@ -1,8 +1,16 @@
+import { SignInSchema } from "~/features/auth/base/server/libs/validators";
 import { db } from "~/server/db";
 import { eq } from "drizzle-orm";
 import { lucia } from "../../libs/lucia";
 import { verify } from "../../libs/hash";
 
+/**
+ * @param {unknown} input
+ * @returns {import("./types").SignInInput}
+ */
+export function signInInput(input) {
+  return SignInSchema.parse(input);
+}
 /**
  * @param {import("./types").SignInInput} input
  * @param {import("./types").SignInOptions} options
@@ -40,6 +48,10 @@ export async function signInService(input, options) {
     throw new Error("Incorrect name or password");
   }
 
+  if (!existingUser.emailVerifiedAt) {
+    throw new Error("Email not verified");
+  }
+
   const session = await lucia.createSession(existingUser.id, {
     expiresIn: 60 * 60 * 24 * 30,
   });
@@ -47,7 +59,7 @@ export async function signInService(input, options) {
   const sessionCookie = lucia.createSessionCookie(session.id);
 
   options
-    .getServerCookies()
+    .getCookies()
     .set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
 
   return { status: "success", message: "Logged in successfully" };

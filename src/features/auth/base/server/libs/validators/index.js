@@ -32,3 +32,11 @@ export const SignInSchema = z
     message: "Username or email is required",
     path: ["name", "email"],
   });
+
+export const verifyEmailSchema = z.object({
+  token: z.string().min(1),
+});
+
+export const resendVerificationEmailSchema = z.object({
+  email: z.string().email(),
+});
