@@ -13,16 +13,23 @@ import {
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
 import { signUpAction } from "~/features/auth/nextjs/server/actions";
 import { SignUpSchema } from "~/features/auth/base/server/libs/validators";
+import ResendVerificationEmailButton from "../resend-verification-email/button";
+import useResendVerificationEmail from "../../hooks/core/resend-verification-email";
 
 /**
  * @typedef {import("~/features/auth/base/server/features/sign-up/types").SignUpInput} FormValues
  */
 
 export function SignUpForm() {
-  const router = useRouter();
+  const {
+    countdown,
+    isResendVerificationEmailLoading,
+    showResendVerificationEmail,
+    setShowResendVerificationEmail,
+    onResendVerificationEmail,
+  } = useResendVerificationEmail();
 
   const form = useForm({
     resolver: zodResolver(SignUpSchema),
@@ -48,9 +55,13 @@ export function SignUpForm() {
         }
       }
     } else if (res.status === "success") {
-      toast(res.message ?? "Account created successfully");
+      // router.push("/");
 
-      router.push("/");
+      toast(res.message ?? "Account created successfully");
+      toast.warning(
+        "We've sent an verification email to your inbox. Please verify your email to continue.",
+      );
+      setShowResendVerificationEmail(true);
     }
   }
   return (
@@ -110,6 +121,20 @@ export function SignUpForm() {
         />
         <Button type="submit">Submit</Button>
       </form>
+      {showResendVerificationEmail && (
+        <ResendVerificationEmailButton
+          countdown={countdown}
+          isLoading={isResendVerificationEmailLoading}
+          handleSend={async () => {
+            const email = form.getValues("email");
+            if (!email) {
+              return;
+            }
+
+            await onResendVerificationEmail(email);
+          }}
+        />
+      )}
     </Form>
   );
 }

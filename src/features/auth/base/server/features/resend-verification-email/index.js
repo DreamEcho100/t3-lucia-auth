@@ -15,6 +15,7 @@ export function resendVerificationEmailInput(input) {
 /**
  * @param {import("./types").ResendVerificationEmailInput} input
  * @param {import("./types").ResendVerificationEmailOptions} options
+ * @returns {Promise<import("./types").ResendVerificationEmailServiceSuccessResult>}
  */
 export async function resendVerificationEmailService(input, options) {
   const existingUser = await db.query.users.findFirst({
@@ -22,11 +23,11 @@ export async function resendVerificationEmailService(input, options) {
   });
 
   if (!existingUser) {
-    return { error: "User not found" };
+    throw new Error("User not found");
   }
 
   if (existingUser.emailVerifiedAt) {
-    return { error: "Email already verified" };
+    throw new Error("Email already verified");
   }
 
   const existedCode = await db.query.emailsVerifications.findFirst({
@@ -34,19 +35,18 @@ export async function resendVerificationEmailService(input, options) {
   });
 
   if (!existedCode) {
-    return { error: "Code not found" };
+    throw new Error("Code not found");
   }
 
   const sentAt = new Date(existedCode.sentAt);
   const isOneMinuteHasPassed = new Date().getTime() - sentAt.getTime() > 60000; // 1 minute
 
   if (!isOneMinuteHasPassed) {
-    return {
-      error:
-        "Email already sent next email in " +
+    throw new Error(
+      "Email already sent next email in " +
         (60 - Math.floor((new Date().getTime() - sentAt.getTime()) / 1000)) +
         " seconds",
-    };
+    );
   }
 
   const token = await generateEmailVerificationToken({
@@ -63,5 +63,5 @@ export async function resendVerificationEmailService(input, options) {
     to: input.email,
   });
 
-  return { success: "Email sent" };
+  return { status: "success", message: "Email sent" };
 }

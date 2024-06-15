@@ -10,6 +10,7 @@ export function errorFormatter(error) {
       status: "error",
       message: error.message,
       statusNumber: error.statusNumber,
+      key: error.key,
     };
   }
 
@@ -36,14 +37,19 @@ export class AuthError extends Error {
   /** @type {number} */
   statusNumber;
 
+  /** @type {string | undefined} */
+  key;
+
   /**
    * @param {string} message
    * @param {number} statusNumber
+   * @param {string} [key]
    */
-  constructor(message, statusNumber) {
+  constructor(message, statusNumber, key) {
     super(message);
     this.name = "AuthError";
     this.statusNumber = statusNumber;
+    this.key = key;
   }
 }
 

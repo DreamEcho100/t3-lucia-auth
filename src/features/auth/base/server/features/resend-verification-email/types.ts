@@ -1,14 +1,8 @@
-import type {
-  AuthDefaultOptions,
-  AuthRedirectResult,
-  AuthSuccessResult,
-} from "../../types";
+import type { AuthDefaultOptions, AuthSuccessResult } from "../../types";
 
 export type ResendVerificationEmailOptions = AuthDefaultOptions;
 export interface ResendVerificationEmailInput {
   email: string;
 }
-
-export type ResendVerificationEmailServiceSuccessResult = Promise<
-  AuthSuccessResult | AuthRedirectResult
->;
+export type ResendVerificationEmailServiceSuccessResult =
+  Promise<AuthSuccessResult>;

@@ -46,6 +46,7 @@ export type AuthRedirectResult = {
   message?: string;
   url: string;
   statusNumber: number;
+  key?: string;
 };
 
 export type AuthErrorResult =
@@ -54,6 +55,7 @@ export type AuthErrorResult =
       message: string;
       data?: never;
       statusNumber: number;
+      key?: string;
     }
   | {
       status: "input-validation-errors";
@@ -65,6 +67,7 @@ export type AuthErrorResult =
       message?: never;
       data?: never;
       statusNumber: number;
+      key?: string;
     };
 
 export type AuthResult<Data = undefined> =

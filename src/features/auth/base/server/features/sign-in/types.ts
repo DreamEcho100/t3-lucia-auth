@@ -1,8 +1,4 @@
-import type {
-  AuthSuccessResult,
-  AuthResult,
-  AuthDefaultOptions,
-} from "../../types";
+import type { AuthSuccessResult, AuthDefaultOptions } from "../../types";
 
 export interface SignInInput {
   password: string;
@@ -11,6 +7,4 @@ export interface SignInInput {
 }
 
 export type SignInOptions = AuthDefaultOptions;
-
 export type SignInServiceSuccessResult = Promise<AuthSuccessResult>;
-export type SignInServiceResult = Promise<AuthResult>;

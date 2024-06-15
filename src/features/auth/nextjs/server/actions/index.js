@@ -28,7 +28,7 @@ const nextServerAuthDefaultOptions = {
  *
  * @param {{
  *  schema: (input: unknown) => Input;
- *  action:  ((input: Input) => Promise<Output>);
+ *  action:  ((input: Input) => Promise<Output> | Output);
  * }} param
  */
 function safeAction(param) {

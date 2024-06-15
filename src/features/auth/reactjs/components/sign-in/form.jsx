@@ -18,6 +18,9 @@ import { useRouter } from "next/navigation";
 import { signInAction } from "~/features/auth/nextjs/server/actions";
 import { SignInSchema } from "~/features/auth/base/server/libs/validators";
 import { useState } from "react";
+import { AUTH_ERROR_CODES } from "~/features/auth/base/server/libs/constants";
+import ResendVerificationEmailButton from "../resend-verification-email/button";
+import useResendVerificationEmail from "../../hooks/core/resend-verification-email";
 
 /**
  * @typedef {import("~/features/auth/base/server/features/sign-in/types").SignInInput} FormValues
@@ -74,6 +77,14 @@ function UsernameOrEmailField({ form }) {
 export function SignInForm() {
   const router = useRouter();
 
+  const {
+    countdown,
+    isResendVerificationEmailLoading,
+    showResendVerificationEmail,
+    setShowResendVerificationEmail,
+    onResendVerificationEmail,
+  } = useResendVerificationEmail();
+
   const form = useForm({
     resolver: zodResolver(SignInSchema),
     defaultValues: /** @type {FormValues} */ ({
@@ -88,6 +99,10 @@ export function SignInForm() {
     const res = await signInAction(values);
     if (res.status === "error") {
       toast.error(res.message);
+
+      if (res?.key === AUTH_ERROR_CODES.EMAIL_NOT_VERIFIED) {
+        setShowResendVerificationEmail(true);
+      }
     } else if (res.status === "input-validation-errors") {
       for (const field in res.fields) {
         const message = res.fields[field]?.join("\n");
@@ -107,7 +122,7 @@ export function SignInForm() {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="dark:text-whiite space-y-2"
+        className="space-y-2 dark:text-white"
       >
         <UsernameOrEmailField form={form} />
         <FormField
@@ -127,6 +142,20 @@ export function SignInForm() {
           Submit
         </Button>
       </form>
+      {showResendVerificationEmail && (
+        <ResendVerificationEmailButton
+          countdown={countdown}
+          isLoading={isResendVerificationEmailLoading}
+          handleSend={async () => {
+            const email = form.getValues("email");
+            if (!email) {
+              return;
+            }
+
+            await onResendVerificationEmail(email);
+          }}
+        />
+      )}
     </Form>
   );
 }

@@ -3,6 +3,8 @@ import { db } from "~/server/db";
 import { eq } from "drizzle-orm";
 import { lucia } from "../../libs/lucia";
 import { verify } from "../../libs/hash";
+import { AuthError } from "../../libs/error";
+import { AUTH_ERROR_CODES } from "../../libs/constants";
 
 /**
  * @param {unknown} input
@@ -49,7 +51,11 @@ export async function signInService(input, options) {
   }
 
   if (!existingUser.emailVerifiedAt) {
-    throw new Error("Email not verified");
+    throw new AuthError(
+      "Email not verified",
+      400,
+      AUTH_ERROR_CODES.EMAIL_NOT_VERIFIED,
+    );
   }
 
   const session = await lucia.createSession(existingUser.id, {

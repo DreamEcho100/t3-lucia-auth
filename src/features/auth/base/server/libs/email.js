@@ -52,7 +52,7 @@ export function verifyEmailVerificationToken(token, secret) {
     jwt.verify(token, secret)
   );
 }
-/** @param {{ userId: string; email: string; code: string; env: import("../types").AuthNeededEnv }} data */
+/** @param {{ userId: string; email: string; code?: string; env: import("../types").AuthNeededEnv }} data */
 export async function generateEmailVerificationToken(data) {
   const code = Math.random().toString(36).substring(2, 8);
 

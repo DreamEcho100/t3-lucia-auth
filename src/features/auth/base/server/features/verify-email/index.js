@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 import { eq } from "drizzle-orm";
 import { lucia } from "../../libs/lucia";
 import { AuthError } from "../../libs/error";
-import { ERROR_CODES } from "../../libs/constants";
+import { AUTH_ERROR_CODES } from "../../libs/constants";
 import { verifyEmailSchema } from "../../libs/validators";
 import { verifyEmailVerificationToken } from "../../libs/email";
 
@@ -35,7 +35,7 @@ export async function verifyEmailService(input, options) {
     });
 
   if (!emailVerificationQueryResult) {
-    throw new AuthError(ERROR_CODES.INVALID_TOKEN, 400);
+    throw new AuthError(AUTH_ERROR_CODES.INVALID_TOKEN, 400);
   }
 
   await db.transaction(async (trx) => {
